@@ -15,6 +15,8 @@ FontFace=0;// [0:Arial Bold,1:Liberation Sans]
 FontFacesInCustomizer=["Arial:style=Bold","Liberation Sans"]; //TODO add more
 Font=FontFacesInCustomizer[FontFace];
 
+FontDepth=0.5;
+
 //Increase the default facet number to produce smoother curves
 fn_override = 0; //[0:Default, 24:Better (24), 50:High quality (50), 100:Super HQ (100)]
 $fn = fn_override;
@@ -74,7 +76,8 @@ module block(label, size)
             translate([size[0]*centerXYOffset, size[1]*centerXYOffset, -TWEAK])
                 cube([centerCutX, centerCutY, size[2]+TWEAK2]);
             //Temp label
-            translate([blockHeight * fontXOffsetPct, 0, blockHeight * fontZOffsetPct]) rotate([90,0,0])
+            translate([blockHeight * fontXOffsetPct, FontDepth, blockHeight * fontZOffsetPct]) rotate([90,0,0])
+                linear_extrude(FontDepth+TWEAK)
                 text(label, font=Font, size=blockHeight * fontSizePct);
             
             //Side 1: Hole
