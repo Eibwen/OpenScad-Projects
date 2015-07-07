@@ -17,6 +17,7 @@ Font=FontFacesInCustomizer[FontFace];
 
 //Increase the default facet number to produce smoother curves
 fn_override = 0; //[0:Default, 24:Better (24), 50:High quality (50), 100:Super HQ (100)]
+$fn = fn_override;
 
 /* [Hidden] */
 
@@ -42,7 +43,7 @@ difference()
     }
 }
 
-$fn_override = max($fn, fn_override);
+$fn_override = $fn;
 function getCustomFn(base) = max(base, $fn_override);
 
 
