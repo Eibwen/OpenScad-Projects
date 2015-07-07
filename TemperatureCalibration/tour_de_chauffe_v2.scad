@@ -15,6 +15,9 @@ FontFace=0;// [0:Arial Bold,1:Liberation Sans]
 FontFacesInCustomizer=["Arial:style=Bold","Liberation Sans"]; //TODO add more
 Font=FontFacesInCustomizer[FontFace];
 
+//Increase the default facet number to produce smoother curves
+fn_override = 0; //[0:Default, 24:Better (24), 50:High quality (50), 100:Super HQ (100)]
+
 /* [Hidden] */
 
 TWEAK=0.01;
@@ -39,7 +42,7 @@ difference()
     }
 }
 
-$fn_override = $fn;
+$fn_override = max($fn, fn_override);
 function getCustomFn(base) = max(base, $fn_override);
 
 
@@ -76,7 +79,7 @@ module block(label, size)
             //Side 1: Hole
             //  Same size as centerCutoutPct
             translate([size[0]-(size[0]*centerXYOffset)-TWEAK, size[1]*.5, size[2]*.5]) rotate([0,90,0])
-                cylinder(d=min(centerCutX, centerCutY), h=size[0]);
+                cylinder(d=min(centerCutX, centerCutY), h=size[0], $fn=getCustomFn(24));
             
             //Side2: Arch/Slant
             radius=9;
