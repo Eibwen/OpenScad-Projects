@@ -1,5 +1,7 @@
 //NOT TESTED for non cubes... should work for variable height (X=Y), but no guarantee.
 
+DoYouUnderstandGCodePlugins=false;
+
 NumberOfBlocks = 7;
 Labels=["206","208","210","212","214","216","218"];
 Reverse=false;
@@ -12,12 +14,27 @@ TWEAK=0.01;
 TWEAK2=TWEAK*2;
 
 
-for (i = [1:NumberOfBlocks])
+difference()
 {
-    translate([0,0,BlockSize[2] * (i-1)])
-        block(Reverse ? Labels[NumberOfBlocks-i-1] : Labels[i-1], BlockSize);
-    echo(Labels[i-1]);
+    for (i = [1:NumberOfBlocks])
+    {
+        //My disclamer strategy...
+        if (DoYouUnderstandGCodePlugins)
+        translate([0,0,BlockSize[2] * (i-1)])
+            block(Reverse ? Labels[NumberOfBlocks-i-1] : Labels[i-1], BlockSize);
+        echo(Labels[i-1]);
+    }
+
+    for (i = [1:NumberOfBlocks-1])
+    {
+        translate([-TWEAK,0,i*BlockSize[2]]) rotate([0,90,0])
+            cylinder(d=1,h=BlockSize[0]+TWEAK2, $fn=getCustomFn(30));
+    }
 }
+
+$fn_override = $fn;
+function getCustomFn(base) = max(base, $fn_override);
+
 
 module block(label, size)
 {
@@ -55,7 +72,11 @@ module block(label, size)
                 cylinder(d=min(centerCutX, centerCutY), h=size[0]);
             
             //Side2: Arch/Slant
-            
+            radius=9;
+            paddingSize=(size[0]-radius)/2;
+            translate([radius+paddingSize,size[1] - (size[1]*centerXYOffset)-TWEAK,paddingSize])
+                rotate([90,0,180])
+                archslantThing(radius, size[1]);
             
             //Size 3: Triangle
             //  Same size as centerCutoutPct
@@ -71,4 +92,22 @@ module triangle(height, base, depth)
     linear_extrude(height)
         //polygon(points=[[-base/2,-height/2],[base/2,-height/2],[0,height/2]]);
         polygon(points=[[-base/2,0],[base/2,0],[0,height]]);
+}
+module archslantThing(radius, height)
+{
+    //bottom flat=4.5
+    //28 degree slope toward top
+    yOffset=-0.5;
+    difference()
+    {
+        translate([0,yOffset,0])
+        cylinder(r=radius, h=height);
+        
+        translate([-radius,-radius+yOffset,-TWEAK])
+            cube([radius*2+TWEAK2,radius-yOffset,height+TWEAK2]);
+        translate([radius/2,0,0])
+        rotate([0,0,28])
+        translate([-radius*1.5,0,-TWEAK])
+            cube([radius*1.5,radius*1.5,height+TWEAK2]);
+    }
 }
