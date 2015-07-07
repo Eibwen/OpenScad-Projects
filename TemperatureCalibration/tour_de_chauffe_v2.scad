@@ -1,6 +1,7 @@
 //NOT TESTED for non cubes... should work for variable height (X=Y), but no guarantee.
 
 // You must modify the gcode you generate! (Cura has TweakAtX plugin, not sure about other slicers)
+DoYouUnderstandYouMustModifyTheGCodeThisMakes=123; // [123:What?, 7:Yes I understand]
 
 NumberOfBlocks = 7;
 Labels=["206","208","210","212","214","216","218"];
