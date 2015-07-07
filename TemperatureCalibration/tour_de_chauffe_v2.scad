@@ -1,14 +1,22 @@
 //NOT TESTED for non cubes... should work for variable height (X=Y), but no guarantee.
 
-DoYouUnderstandGCodePlugins=false;
+// You must modify the gcode you generate! (Cura has TweakAtX plugin, not sure about other slicers)
+DoYouUnderstandYouMustModifyTheGCodeThisMakes=123; // [123:What?, 456:Yes I understand]
 
 NumberOfBlocks = 7;
 Labels=["206","208","210","212","214","216","218"];
-Reverse=false;
+ReverseLabelOrder=0; //[0:False, 1:True]
+Reverse=ReverseLabelOrder == 1;
 
+// NOT guaranteed to work for all combinations (simply have not tested it)
 BlockSize=[10,10,10];
 
-Font="Arial:style=Bold"; //["Arial:style=Bold","Liberation Sans"]
+
+FontFace=0;// [0:Arial Bold,1:Liberation Sans]
+FontFacesInCustomizer=["Arial:style=Bold","Liberation Sans"]; //TODO add more
+Font=FontFacesInCustomizer[FontFace];
+
+/* [Hidden] */
 
 TWEAK=0.01;
 TWEAK2=TWEAK*2;
@@ -19,7 +27,7 @@ difference()
     for (i = [1:NumberOfBlocks])
     {
         //My disclamer strategy...
-        if (DoYouUnderstandGCodePlugins)
+        if (DoYouUnderstandYouMustModifyTheGCodeThisMakes == 456)
         translate([0,0,BlockSize[2] * (i-1)])
             block(Reverse ? Labels[NumberOfBlocks-i-1] : Labels[i-1], BlockSize);
         echo(Labels[i-1]);
