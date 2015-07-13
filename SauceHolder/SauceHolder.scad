@@ -3,7 +3,7 @@
 $fn=100;
 
 
-PieceToRender=0; //[0:All pieces, 1:Main holder, 2:Lid, 3:Connector lock]
+PieceToRender=0; //[0:All pieces, 1:Main holder, 2:Lid, 3:Connector lock, 4:Main and Lid printable]
 
 
 Font=""; //FONTLIST
@@ -66,13 +66,17 @@ TotalHeight=HeightOfHolder+WallThickness;
 
 
 //Render vars
-Render_MainHolder = PieceToRender==0 || PieceToRender==1;
+Render_MainHolder = PieceToRender==0 || PieceToRender==1 || PieceToRender==4;
 Render_Ramp = IncludeRamp == 1;
-Render_Lid = PieceToRender==0 || PieceToRender==2;
+Render_Lid = PieceToRender==0 || PieceToRender==2 || PieceToRender==4;
 Render_ConnectorLock = PieceToRender==0 || PieceToRender==3;
 //RenderOffsets
-RO_Lid=[0,0,PieceToRender==0 ? HeightOfHolder+LidDepth+5 : 0];
-RO_Connector=[0,TotalDepth+ConnectorDepth+5,0];
+RO_Lid=PieceToRender==4
+        ? [-5, 0, LidDepth+WallThickness]
+        : [0,0,PieceToRender==0 ? HeightOfHolder+LidDepth+5 : 0];
+RO_Connector=[0,PieceToRender==0 ? TotalDepth+ConnectorDepth+5 : 0,0];
+
+Rotate_Lid=PieceToRender==4 ? [0,180,0] : [0,0,0];
 
 if (Render_MainHolder)
 {
@@ -130,6 +134,7 @@ if (Render_MainHolder)
 if (Render_Lid)
 {
     translate(RO_Lid)
+    rotate(Rotate_Lid)
     {
         lidDepth=LidCoversConnector==1 ? TotalDepth+ConnectorDepth : TotalDepth;
         
