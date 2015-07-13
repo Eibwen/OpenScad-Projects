@@ -12,8 +12,10 @@ Reverse=ReverseLabelOrder == 1;
 BlockSize=[10,10,10];
 
 
-FontFace=0;// [0:Arial Bold,1:Liberation Sans]
-FontFacesInCustomizer=["Arial:style=Bold","Liberation Sans"]; //TODO add more
+FontFace=2;// [0:Arial Bold,1:Liberation Sans,2:Open Sans,3:Montserrat,4:Dosis,5:Orbitron]
+FontFacesInCustomizer=["Arial:style=Bold","Liberation Sans",
+    "Open Sans:style=Bold",
+    "Montserrat:style=Bold","Dosis:style=Bold","Orbitron:style=Bold"]; //TODO add more
 Font=FontFacesInCustomizer[FontFace];
 
 FontDepth=0.5;
@@ -28,12 +30,12 @@ TWEAK=0.01;
 TWEAK2=TWEAK*2;
 
 
+//My disclamer strategy...
+if (DoYouUnderstandYouMustModifyTheGCodeThisMakes == 7)
 difference()
 {
     for (i = [1:NumberOfBlocks])
     {
-        //My disclamer strategy...
-        if (DoYouUnderstandYouMustModifyTheGCodeThisMakes == 7)
         translate([0,0,BlockSize[2] * (i-1)])
             block(Reverse ? Labels[NumberOfBlocks-i-1] : Labels[i-1], BlockSize);
         echo(Labels[i-1]);
@@ -44,6 +46,15 @@ difference()
         translate([-TWEAK,0,i*BlockSize[2]]) rotate([0,90,0])
             cylinder(d=1,h=BlockSize[0]+TWEAK2, $fn=getCustomFn(30));
     }
+}
+else
+{
+    rotate([90,-90,0])
+    linear_extrude(2)
+        union(){
+        text("Learn/confirm you know how to modify", 10);
+            translate([0,-12,0])
+        text("the temp when generating the gcode", 10);}
 }
 
 $fn_override = $fn;
@@ -79,7 +90,9 @@ module block(label, size)
             //Temp label
             translate([blockHeight * fontXOffsetPct, FontDepth, blockHeight * fontZOffsetPct]) rotate([90,0,0])
                 linear_extrude(FontDepth+TWEAK)
-                text(label, font=Font, size=blockHeight * fontSizePct);
+                //text(label, font=Font, size=blockHeight * fontSizePct);
+                text(str(label), blockHeight * fontSizePct, Font);
+                //text(label, size=font_size, halign="center");
             
             //Side 1: Hole
             //  Same size as centerCutoutPct
