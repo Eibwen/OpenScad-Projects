@@ -6,6 +6,9 @@ Labels=["206","208","210","212","214","216","218"];
 ReverseLabelOrder=0; //[0:False, 1:True]
 Reverse=ReverseLabelOrder == 1;
 
+NotesLine1="0.1 layer";
+NotesLine2="inland purple";
+
 // NOT guaranteed to work for all combinations (simply have not tested it)
 StepSize=[10,10,2];
 StepHeight=10;
@@ -44,6 +47,9 @@ if (DoYouUnderstandYouMustModifyTheGCodeThisMakes==2)
         translate([0,StepSize[1]*(i-1),0])
             step(StepHeight*i, Reverse ? Labels[NumberOfBlocks-i-1] : Labels[i-1]);
     }
+    //Notes lines:
+    color("blue") translate([0,NumberOfSteps*StepSize[1]-StepSize[1]*.2,0]) rotate([90,0,-90])
+        renderNotes([NotesLine1, NotesLine2], Font, StepSize[0] * 0.4, FontDepth+TWEAK);
 }
 
 
@@ -75,15 +81,28 @@ module step(height, label)
                 //Temp label, vertical
                 translate([blockWidth-FontDepth, (StepSize[1]-(blockWidth * fontSizePct))/2, height]) rotate([90,90,90])
                             linear_extrude(FontDepth+TWEAK)
-                            text(label, font=Font, size=blockWidth * fontSizePct);
+                            text(str(label), font=Font, size=blockWidth * fontSizePct);
             }
             if (FontDirection==0)
             {
                 //Temp label, horizontal
                 translate([blockWidth-FontDepth, FontDepth, height - 2*(blockWidth * fontZOffsetPct)]) rotate([90,0,90])
                             linear_extrude(FontDepth+TWEAK)
-                            text(label, font=Font, size=blockWidth * fontSizePct);
+                            text(str(label), font=Font, size=blockWidth * fontSizePct);
             }
         }
+    }
+}
+
+module renderNotes(textArray, fontFace, fontSize, fontDepth)
+{
+    length=len(textArray)-1;
+    for (i = [length:-1:0])
+    {
+        label=textArray[i];
+        
+        translate([0,(fontSize*1.2)*(length-i)+fontSize*.3,0])
+        linear_extrude(FontDepth+TWEAK)
+            text(str(label), font=fontFace, size=fontSize);
     }
 }
