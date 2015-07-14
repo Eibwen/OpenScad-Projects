@@ -1,5 +1,5 @@
 // You must modify the gcode you generate! (Cura has TweakAtX plugin, not sure about other slicers)
-DoYouUnderstandYouMustModifyTheGCodeThisMakes=2; // [1:What?, 2:Yes I understand]
+DoYouUnderstandYouMustModifyTheGCodeThisMakes=1; // [1:What?, 2:Yes I understand]
 
 NumberOfSteps = 7;
 Labels=["206","208","210","212","214","216","218"];
@@ -50,6 +50,15 @@ if (DoYouUnderstandYouMustModifyTheGCodeThisMakes==2)
     //Notes lines:
     color("blue") translate([0,NumberOfSteps*StepSize[1]-StepSize[1]*.2,0]) rotate([90,0,-90])
         renderNotes([NotesLine1, NotesLine2], Font, StepSize[0] * 0.4, FontDepth+TWEAK);
+}
+else
+{
+    rotate([90,0,0])
+    linear_extrude(2)
+        union(){
+        text("Learn/confirm you know how to modify", 10);
+            translate([0,-12,0])
+        text("the temp when generating the gcode", 10);}
 }
 
 
