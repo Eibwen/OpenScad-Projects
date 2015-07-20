@@ -45,7 +45,8 @@ LidLabel_LengthWise_Position=2; //[0:Bottom, 1:Middle, 2:Top]
 LidLabel_LengthWise_Rotation=1; //[0:Left, 1:Right]
 
 
-SlideFit=0.5;
+//SlideFit=0.5;
+ShrinkageFactorX=.5;
 SlideTightFit=0.25;
 
 
@@ -147,9 +148,9 @@ if (Render_Lid)
                 translate([0,0,LidDepth])
                     cube([TotalWidth,lidDepth,WallThickness]);
                 //lid edge
-                //Here i am using SlideFit (considered as radius) for each X and Y lengths... should fit...
-                translate([WallThickness+SlideFit,WallThickness+SlideFit,0])
-                    cube([WidthOfPacket-SlideFit*2,LengthOfPacket-SlideFit*2,LidDepth+TWEAK]);
+                //Here i am using a single SlideTightFit for each X and Y lengths... should be tight...
+                translate([WallThickness+(SlideTightFit+ShrinkageFactorX)/2,WallThickness+SlideTightFit/2,0])
+                    cube([WidthOfPacket-SlideTightFit-ShrinkageFactorX,LengthOfPacket-SlideTightFit,LidDepth+TWEAK]);
             }
             
             union()
