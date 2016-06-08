@@ -10,6 +10,10 @@ Reverse=ReverseLabelOrder == 1;
 
 // NOT guaranteed to work for all combinations (simply have not tested it)
 BlockSize=[10,10,10];
+WallThickness=1.2;
+TopOfTriangleThickness=2;
+
+TowerBase=[30,30,3];
 
 
 FontFace=2;// [0:Arial Bold,1:Liberation Sans,2:Open Sans,3:Montserrat,4:Dosis,5:Orbitron]
@@ -34,11 +38,20 @@ TWEAK2=TWEAK*2;
 if (DoYouUnderstandYouMustModifyTheGCodeThisMakes == 7)
 difference()
 {
-    for (i = [1:NumberOfBlocks])
+    union()
     {
-        translate([0,0,BlockSize[2] * (i-1)])
-            block(Reverse ? Labels[NumberOfBlocks-i-1] : Labels[i-1], BlockSize);
-        echo(Labels[i-1]);
+        for (i = [1:NumberOfBlocks])
+        {
+            translate([0,0,BlockSize[2] * (i-1)])
+                block(Reverse ? Labels[NumberOfBlocks-i-1] : Labels[i-1], BlockSize);
+            echo(Labels[i-1]);
+        }
+        
+        //Base
+        towerXOffset = (TowerBase[0]-BlockSize[0])/2;
+        towerYOffset = (TowerBase[1]-BlockSize[1])/2;
+        translate([-towerXOffset,-towerYOffset,-TowerBase[2]+TWEAK])
+            cube(TowerBase);
     }
 
     for (i = [1:NumberOfBlocks-1])
@@ -68,8 +81,6 @@ module block(label, size)
     fontXOffsetPct=0.05;
     fontZOffsetPct=0.3;
     
-    centerCutoutPct=0.6;
-    
     difference()
     {
         union()
@@ -79,13 +90,13 @@ module block(label, size)
         
         union()
         {
-            centerXYOffset = (1-centerCutoutPct) / 2;
-            centerCutX=size[0]*centerCutoutPct;
-            centerCutY=size[1]*centerCutoutPct;
-            centerCutZ=size[2]*centerCutoutPct; //Not used for center cut...
+            centerXYOffset = WallThickness;
+            centerCutX=size[0]-WallThickness*2;
+            centerCutY=size[1]-WallThickness*2;
+            centerCutZ=size[2]-TopOfTriangleThickness; //Not used for center cut...
             
             //Center cutout
-            translate([size[0]*centerXYOffset, size[1]*centerXYOffset, -TWEAK])
+            translate([centerXYOffset, centerXYOffset, -TWEAK])
                 cube([centerCutX, centerCutY, size[2]+TWEAK2]);
             //Temp label
             translate([blockHeight * fontXOffsetPct, FontDepth, blockHeight * fontZOffsetPct]) rotate([90,0,0])
@@ -96,20 +107,20 @@ module block(label, size)
             
             //Side 1: Hole
             //  Same size as centerCutoutPct
-            translate([size[0]-(size[0]*centerXYOffset)-TWEAK, size[1]*.5, size[2]*.5]) rotate([0,90,0])
+            translate([size[0]-(centerXYOffset)-TWEAK, size[1]*.5, size[2]*.5]) rotate([0,90,0])
                 cylinder(d=min(centerCutX, centerCutY), h=size[0], $fn=getCustomFn(24));
             
             //Side2: Arch/Slant
             radius=9;
             paddingSize=(size[0]-radius)/2;
-            translate([radius+paddingSize,size[1] - (size[1]*centerXYOffset)-TWEAK,paddingSize])
+            translate([radius+paddingSize,size[1] - (centerXYOffset)-TWEAK,paddingSize])
                 rotate([90,0,180])
                 archslantThing(radius, size[1]);
             
             //Size 3: Triangle
             //  Same size as centerCutoutPct
             //  NOT equilateral, h=6, w=6
-            translate([(size[0]*centerXYOffset)+TWEAK,size[1]/2,size[2]-(size[2]-centerCutZ)/2]) rotate([-90,0,90])
+            translate([(centerXYOffset)+TWEAK,size[1]/2,size[2]-(size[2]-centerCutZ)/2]) rotate([-90,0,90])
                 triangle(centerCutZ, centerCutX, size[0]);
         }
     }
