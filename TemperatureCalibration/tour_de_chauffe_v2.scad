@@ -42,9 +42,10 @@ difference()
     {
         for (i = [1:NumberOfBlocks])
         {
+            blockIndexer = Reverse ? NumberOfBlocks-i : i-1;
             translate([0,0,BlockSize[2] * (i-1)])
-                block(Reverse ? Labels[NumberOfBlocks-i-1] : Labels[i-1], BlockSize);
-            echo(Labels[i-1]);
+                block(Labels[blockIndexer], BlockSize);
+            echo(Labels[blockIndexer], "starts at",BlockSize[2] * (i-1)+TowerBase[2]);
         }
         
         //Base
